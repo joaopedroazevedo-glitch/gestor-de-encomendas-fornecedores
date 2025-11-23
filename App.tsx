@@ -126,13 +126,13 @@ const App: React.FC = () => {
     doc.text(`${order.orderNumber}`, 60, 80);
 
     // --- Material Header ---
-    // Y = 120 (Moved down from 100)
+    // Y = 95 (Moved up from 120 to be immediately below Order Number)
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
-    doc.text("Material/Serviço Solicitado:", 20, 120);
+    doc.text("Material/Serviço Solicitado:", 20, 95);
 
     // --- Content Section (Dynamic Height) ---
-    let cursorY = 130; // Start content at 130
+    let cursorY = 105; // Start content at 105 (immediately below header)
     const maxWidth = 170;
     const lineHeight = 6;
 
@@ -172,12 +172,10 @@ const App: React.FC = () => {
     doc.text(order.commercial, 55, commercialY);
 
     // --- OEKO-TEX Note ---
-    if (commercialY + 20 < 285) {
-        const noteY = commercialY + 20;
-        doc.setFont("helvetica", "italic");
-        doc.setFontSize(10);
-        doc.text('Todos os produtos devem ser certificados "OEKO-TEX"', 20, noteY);
-    }
+    const noteY = commercialY + 10;
+    doc.setFont("helvetica", "italic");
+    doc.setFontSize(10);
+    doc.text('Todos os produtos devem ser certificados "OEKO-TEX"', 20, noteY);
 
     // --- Footer ---
     doc.setFont("helvetica", "normal");
@@ -219,13 +217,10 @@ const App: React.FC = () => {
     return maxOrder + 1;
   }, [orders]);
 
-  // Filter orders based on search
+  // Filter orders based on search (Only by Order Number)
   const filteredOrders = useMemo(() => {
+    if (!searchQuery) return orders;
     return orders.filter(order => 
-      order.customer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.material.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (order.serviceDescription && order.serviceDescription.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      order.supplier.toLowerCase().includes(searchQuery.toLowerCase()) ||
       order.orderNumber.toString().includes(searchQuery)
     );
   }, [orders, searchQuery]);
@@ -251,7 +246,7 @@ const App: React.FC = () => {
               </div>
               <input
                 type="text"
-                placeholder="Pesquisar..."
+                placeholder="Pesquisar Nº Pedido..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64 transition-all"
