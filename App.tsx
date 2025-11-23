@@ -156,18 +156,6 @@ const App: React.FC = () => {
       cursorY += splitService.length * lineHeight;
     }
 
-    // --- Draw Box ---
-    // Box starts above Material text content (130 - 5 = 125)
-    // Box ends just below the content text
-    const boxTop = 125; 
-    const boxBottom = cursorY + 5; // Add padding below text
-    const boxHeight = boxBottom - boxTop;
-
-    if (boxHeight > 0) {
-      doc.setDrawColor(0); 
-      doc.rect(18, boxTop, 174, boxHeight);
-    }
-
     // --- Date Section (Positioned relative to content) ---
     // Keep date at bottom (250) unless content pushes it further
     const minDateY = 250; 
