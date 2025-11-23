@@ -6,7 +6,7 @@ import { OrderForm } from './components/OrderForm';
 import { SupplierSettings } from './components/SupplierSettings';
 import { Button } from './components/Button';
 import { Plus, Settings, Search, AlertTriangle, Package } from 'lucide-react';
-import { jsPDF } from "jspdf";
+import jsPDF from "jspdf";
 
 const INITIAL_SUPPLIERS: Supplier[] = [
   { id: '1', name: 'Anjo & Carpinteiro' },
@@ -81,10 +81,18 @@ const App: React.FC = () => {
     localStorage.setItem('app_commercials', JSON.stringify(commercials));
   }, [commercials]);
 
+  // Helper for ID generation
+  const generateId = () => {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+    return Date.now().toString(36) + Math.random().toString(36).substring(2);
+  };
+
   // Handlers
   const handleAddOrder = (orderData: any) => {
     const newOrder: Order = {
-      id: crypto.randomUUID(),
+      id: generateId(),
       ...orderData
     };
     setOrders([newOrder, ...orders]);
@@ -126,13 +134,13 @@ const App: React.FC = () => {
     doc.text(`${order.orderNumber}`, 60, 80);
 
     // --- Material Header ---
-    // Y = 95 (Moved up from 120 to be immediately below Order Number)
+    // Y = 90 (Moved up to be immediately below Order Number)
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
-    doc.text("Material/Serviço Solicitado:", 20, 95);
+    doc.text("Material/Serviço Solicitado:", 20, 90);
 
     // --- Content Section (Dynamic Height) ---
-    let cursorY = 105; // Start content at 105 (immediately below header)
+    let cursorY = 100; // Start content at 100
     const maxWidth = 170;
     const lineHeight = 6;
 
@@ -172,7 +180,8 @@ const App: React.FC = () => {
     doc.text(order.commercial, 55, commercialY);
 
     // --- OEKO-TEX Note ---
-    const noteY = commercialY + 10;
+    // Positioned immediately below commercial (reduced gap)
+    const noteY = commercialY + 7;
     doc.setFont("helvetica", "italic");
     doc.setFontSize(10);
     doc.text('Todos os produtos devem ser certificados "OEKO-TEX"', 20, noteY);
@@ -188,7 +197,7 @@ const App: React.FC = () => {
 
   const handleAddSupplier = (name: string) => {
     const newSupplier: Supplier = {
-      id: crypto.randomUUID(),
+      id: generateId(),
       name
     };
     setSuppliers([...suppliers, newSupplier]);
@@ -200,7 +209,7 @@ const App: React.FC = () => {
 
   const handleAddCommercial = (name: string) => {
     const newCommercial: Commercial = {
-      id: crypto.randomUUID(),
+      id: generateId(),
       name
     };
     setCommercials([...commercials, newCommercial]);
